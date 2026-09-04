@@ -16,6 +16,9 @@
         fetch(targetUrl, {
             method: "GET",
             credentials: "include" // Ավելացվում է, եթե հարցումը պետք է ուղարկի նաև օգտատիրոջ Cookie-ները
+            headers: {
+                "X-Xsrf-Token": "6b6b1303-01d8-42e0-8765-4ad843a52a9f"
+            }
         })
         .then(response => {
             // Ստուգում ենք պատասխանի ստատուսը և վերցնում տեքստը
