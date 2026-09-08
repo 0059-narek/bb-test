@@ -32,21 +32,12 @@
     #externalSystemContainer {
       height: 65px;
       padding: 12px 24px;
-
       display: flex;
       align-items: center;
       justify-content: space-between;
-
-      background: linear-gradient(
-        to right,
-        #ffffff,
-        #fafafa
-      );
-
+      background: linear-gradient(to right, #ffffff, #fafafa);
       border-bottom: 1px solid #e1e1e1;
-
-      box-shadow:
-        0 2px 8px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
 
     .plugin-title {
@@ -57,19 +48,13 @@
 
     .control-button {
       padding: 8px 16px;
-
       border: 1px solid #e1e1e1;
       border-radius: 8px;
-
       background: #ffffff;
-
       color: #4a4a4a;
-
       font-size: 14px;
       font-weight: 500;
-
       cursor: pointer;
-
       transition: all 0.2s ease;
     }
 
@@ -86,28 +71,19 @@
 
     .btn-group {
       display: flex;
-
       gap: 1px;
-
       padding: 1px;
-
       background: #e1e1e1;
-
       border-radius: 8px;
     }
 
     .btn-group button {
       padding: 8px 16px;
-
       border: none;
-
       background: #ffffff;
-
       color: #6b6b6b;
-
       font-size: 14px;
       font-weight: 500;
-
       cursor: pointer;
     }
 
@@ -136,17 +112,11 @@
 
     .warning-bar {
       height: 38px;
-
       padding: 8px 24px;
-
       background: #fef3c7;
-
       border-bottom: 1px solid #f59e0b;
-
       text-align: center;
-
       color: #92400e;
-
       font-size: 13px;
       font-weight: 500;
     }
@@ -158,25 +128,18 @@
 
     .notification-zone {
       position: fixed;
-
       right: 30px;
       bottom: 80px;
-
       width: 700px;
       max-width: 90%;
-
       z-index: 99999;
     }
 
     .alert {
       margin-bottom: 10px;
-
       padding: 16px 20px;
-
       border-radius: 8px;
-
-      box-shadow:
-        0 4px 12px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
     .alert-success {
@@ -206,32 +169,22 @@
     .avatar-preview {
       width: 34px;
       height: 34px;
-
       margin-left: 5px;
-
       display: inline-block;
-
       border-radius: 15px;
-
       background-size: cover;
       background-position: center;
     }
   </style>
 </head>
 
-
 <body>
-
-  <!-- ============================== -->
-  <!-- External header -->
-  <!-- ============================== -->
 
   <div id="externalSystemContainer">
 
     <div class="plugin-title">
       Stripo Plugin
     </div>
-
 
     <div class="btn-group">
 
@@ -265,7 +218,6 @@
 
     </div>
 
-
     <div>
 
       <button
@@ -276,7 +228,6 @@
       </button>
 
     </div>
-
 
     <div
       id="viewSwitcher"
@@ -296,7 +247,6 @@
 
     </div>
 
-
     <div
       id="versionHistoryViewSwitcher"
       class="btn-group"
@@ -315,7 +265,6 @@
       </button>
 
     </div>
-
 
     <div>
 
@@ -342,61 +291,31 @@
 
     </div>
 
-
     <div id="avatars"></div>
 
   </div>
 
-
-  <!-- ============================== -->
-  <!-- Warning -->
-  <!-- ============================== -->
-
   <div class="warning-bar">
-
     <span>⚠️ Please be advised:</span>
-
     The header shown above is not part of the
     Stripo plugin. It is only an example.
-
   </div>
-
-
-  <!-- ============================== -->
-  <!-- Notifications -->
-  <!-- ============================== -->
 
   <div class="notification-zone"></div>
 
-
-  <!-- ============================== -->
-  <!-- Stripo editor -->
-  <!-- ============================== -->
-
   <div id="stripoEditorContainer"></div>
 
-
-  <!-- ============================== -->
-  <!-- Notifications API -->
-  <!-- ============================== -->
+  <!-- Notifications -->
 
   <script>
-
     const notifications = {
 
       container:
-        document.querySelector(
-          ".notification-zone"
-        ),
+        document.querySelector(".notification-zone"),
 
       timeout: 10000,
 
-
-      show(
-        type,
-        text,
-        id
-      ) {
+      show(type, text, id) {
 
         if (
           id &&
@@ -405,34 +324,24 @@
           return;
         }
 
-
         const element =
           document.createElement("div");
-
 
         element.className =
           "alert alert-" + type;
 
-
         element.textContent = text;
-
 
         if (id) {
           element.id = id;
         }
 
-
-        this.container.appendChild(
-          element
-        );
-
+        this.container.appendChild(element);
 
         setTimeout(
           () => {
 
-            if (
-              element.isConnected
-            ) {
+            if (element.isConnected) {
               element.remove();
             }
 
@@ -442,50 +351,21 @@
 
       },
 
-
       success(text, id) {
-
-        this.show(
-          "success",
-          text,
-          id
-        );
-
+        this.show("success", text, id);
       },
-
 
       info(text, id) {
-
-        this.show(
-          "info",
-          text,
-          id
-        );
-
+        this.show("info", text, id);
       },
-
 
       error(text, id) {
-
-        this.show(
-          "danger",
-          text,
-          id
-        );
-
+        this.show("danger", text, id);
       },
-
 
       warn(text, id) {
-
-        this.show(
-          "warning",
-          text,
-          id
-        );
-
+        this.show("warning", text, id);
       },
-
 
       hide(id) {
 
@@ -499,27 +379,121 @@
       }
 
     };
+  </script>
+
+
+  <!-- Stripo credentials -->
+
+  <script>
+
+    /*
+     * ՏԵՂԱԴՐԻՐ ՔՈ ԱՐԺԵՔՆԵՐԸ ԱՅՍՏԵՂ
+     *
+     * pluginId  -> քո Stripo plugin ID
+     * secretKey -> քո Stripo secret key
+     */
+
+    const STRIPO_CONFIG = {
+
+      pluginId:
+        "d326e98a6b764852ab08f662c5b036b1",
+
+      secretKey:
+        "c10bc09bee04426a9eec888a18e629a8",
+
+      userId:
+        "1",
+
+      role:
+        "USER"
+
+    };
+
+
+    let stripoToken = null;
+
+
+    async function getStripoToken() {
+
+      const response =
+        await fetch(
+          "https://plugins.stripo.email/api/v1/auth",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body: JSON.stringify({
+
+              pluginId:
+                STRIPO_CONFIG.pluginId,
+
+              secretKey:
+                STRIPO_CONFIG.secretKey,
+
+              userId:
+                STRIPO_CONFIG.userId,
+
+              role:
+                STRIPO_CONFIG.role
+
+            })
+
+          }
+        );
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          "Stripo authentication failed: HTTP " +
+          response.status
+        );
+
+      }
+
+
+      const data =
+        await response.json();
+
+
+      if (
+        !data ||
+        !data.token
+      ) {
+
+        throw new Error(
+          "Stripo authentication token was not returned."
+        );
+
+      }
+
+
+      stripoToken =
+        data.token;
+
+
+      return stripoToken;
+
+    }
 
   </script>
 
 
-  <!-- ============================== -->
   <!-- Demo email template -->
-  <!-- ============================== -->
 
   <script>
 
-    function loadDemoTemplate(
-      callback
-    ) {
+    function loadDemoTemplate(callback) {
 
       const html = `
 
 <!DOCTYPE html>
 
-<html
-  xmlns="http://www.w3.org/1999/xhtml"
->
+<html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
 
@@ -528,7 +502,6 @@
   <title>Email Template</title>
 
 </head>
-
 
 <body>
 
@@ -666,17 +639,13 @@
   </script>
 
 
-  <!-- ============================== -->
   <!-- Stripo API actions -->
-  <!-- ============================== -->
 
   <script>
 
     function getStripoApi() {
 
-      if (
-        !window.StripoEditorApi
-      ) {
+      if (!window.StripoEditorApi) {
 
         notifications.error(
           "Stripo editor-ը դեռ պատրաստ չէ։"
@@ -715,6 +684,7 @@
                 );
 
                 return;
+
               }
 
 
@@ -743,22 +713,21 @@
           }
 
 
-          api.actionsApi
-            .getTemplateData(
-              function(data) {
+          api.actionsApi.getTemplateData(
+            function(data) {
 
-                console.log(
-                  "HTML:",
-                  data.html
-                );
+              console.log(
+                "HTML:",
+                data.html
+              );
 
-                console.log(
-                  "CSS:",
-                  data.css
-                );
+              console.log(
+                "CSS:",
+                data.css
+              );
 
-              }
-            );
+            }
+          );
 
 
           notifications.success(
@@ -800,6 +769,7 @@
                   );
 
                   return;
+
                 }
 
 
@@ -808,12 +778,10 @@
                   html
                 );
 
-
                 console.log(
                   "AMP HTML:",
                   ampHtml
                 );
-
 
                 console.log(
                   "AMP Errors:",
@@ -835,9 +803,7 @@
   </script>
 
 
-  <!-- ============================== -->
   <!-- View switching -->
-  <!-- ============================== -->
 
   <script>
 
@@ -894,9 +860,7 @@
   </script>
 
 
-  <!-- ============================== -->
   <!-- Version history -->
-  <!-- ============================== -->
 
   <script>
 
@@ -919,16 +883,12 @@
 
 
       document
-        .getElementById(
-          "undoButton"
-        )
+        .getElementById("undoButton")
         .style.display = "none";
 
 
       document
-        .getElementById(
-          "redoButton"
-        )
+        .getElementById("redoButton")
         .style.display = "none";
 
 
@@ -960,49 +920,45 @@
         .style.display = "flex";
 
 
-      api.versionHistoryApi
-        .openVersionHistory(
+      api.versionHistoryApi.openVersionHistory(
 
-          function(state) {
+        function(state) {
 
-            isVersionHistoryOpened =
-              true;
+          isVersionHistoryOpened =
+            true;
 
+          previousPatch =
+            state.previousPatch;
 
-            previousPatch =
-              state.previousPatch;
-
-
-            nextPatch =
-              state.nextPatch;
+          nextPatch =
+            state.nextPatch;
 
 
-            document
-              .getElementById(
-                "versionHistoryUndoButton"
-              )
-              .disabled =
-                !previousPatch;
+          document
+            .getElementById(
+              "versionHistoryUndoButton"
+            )
+            .disabled =
+              !previousPatch;
 
 
-            document
-              .getElementById(
-                "versionHistoryRedoButton"
-              )
-              .disabled =
-                !nextPatch;
+          document
+            .getElementById(
+              "versionHistoryRedoButton"
+            )
+            .disabled =
+              !nextPatch;
 
-          },
+        },
 
+        function() {
 
-          function() {
+          isVersionHistoryOpened =
+            false;
 
-            isVersionHistoryOpened =
-              false;
+        }
 
-          }
-
-        );
+      );
 
     }
 
@@ -1026,16 +982,12 @@
 
 
       document
-        .getElementById(
-          "undoButton"
-        )
+        .getElementById("undoButton")
         .style.display = "block";
 
 
       document
-        .getElementById(
-          "redoButton"
-        )
+        .getElementById("redoButton")
         .style.display = "block";
 
 
@@ -1167,9 +1119,7 @@
         "click",
         function() {
 
-          if (
-            !isVersionHistoryOpened
-          ) {
+          if (!isVersionHistoryOpened) {
             return;
           }
 
@@ -1214,9 +1164,7 @@
         "click",
         function() {
 
-          if (
-            !isVersionHistoryOpened
-          ) {
+          if (!isVersionHistoryOpened) {
             return;
           }
 
@@ -1255,20 +1203,14 @@
   </script>
 
 
-  <!-- ============================== -->
   <!-- Stripo initialization -->
-  <!-- ============================== -->
 
   <script>
 
-    function initStripo(
-      template
-    ) {
+    async function initStripo(template) {
 
       const script =
-        document.createElement(
-          "script"
-        );
+        document.createElement("script");
 
 
       script.id =
@@ -1284,265 +1226,236 @@
 
 
       script.onload =
-        function() {
+        async function() {
 
-          window.UIEditor.initEditor(
+          try {
 
-            document.querySelector(
-              "#stripoEditorContainer"
-            ),
+            /*
+             * Authentication token-ը ստանում ենք
+             * հենց HTML-ից Stripo auth API-ի միջոցով։
+             */
 
-            {
-
-              ampPage: true,
-
-              ignoreAmp: false,
+            const token =
+              await getStripoToken();
 
 
-              brandColorPalette: [
+            window.UIEditor.initEditor(
 
-                {
-                  name: "Name1",
-                  value: "#35882C"
+              document.querySelector(
+                "#stripoEditorContainer"
+              ),
+
+              {
+
+                ampPage: true,
+
+                ignoreAmp: false,
+
+
+                brandColorPalette: [
+
+                  {
+                    name: "Name1",
+                    value: "#35882C"
+                  },
+
+                  {
+                    value: "white"
+                  },
+
+                  {
+                    name: "Name2",
+                    value: "Green"
+                  }
+
+                ],
+
+
+                html:
+                  template.html,
+
+
+                css:
+                  template.css,
+
+
+                metadata: {
+
+                  emailId:
+                    "plugin_demo_1",
+
+                  userId:
+                    "1",
+
+                  username:
+                    "Plugin Demo User",
+
+                  avatarUrl:
+                    "https://plugin.stripocdn.email/content/guids/CABINET_eab4e7d5a4603ac03f4120652a3a5a540f0c79c688514939f095f67433ed4a67/images/photo256.png"
+
                 },
 
-                {
-                  value: "white"
+
+                locale: "en",
+
+
+                commentingEnabled: {
+
+                  enabled: true
+
                 },
 
-                {
-                  name: "Name2",
-                  value: "Green"
-                }
 
-              ],
+                /*
+                 * Stripo-ն կարող է նոր token պահանջել։
+                 */
 
+                onTokenRefreshRequest:
+                  function(callback) {
 
-              html:
-                template.html,
+                    getStripoToken()
+                      .then(
+                        function(newToken) {
 
+                          callback(
+                            newToken
+                          );
 
-              css:
-                template.css,
+                        }
+                      )
+                      .catch(
+                        function(error) {
 
+                          console.error(
+                            error
+                          );
 
-              metadata: {
+                          notifications.error(
+                            "Stripo authentication failed."
+                          );
 
-                emailId:
-                  "plugin_demo_1",
+                        }
+                      );
 
-                userId:
-                  "1",
-
-                username:
-                  "Plugin Demo User",
-
-                avatarUrl:
-                  "https://plugin.stripocdn.email/content/guids/CABINET_eab4e7d5a4603ac03f4120652a3a5a540f0c79c688514939f095f67433ed4a67/images/photo256.png"
-
-              },
-
-
-              locale: "en",
-
-
-              commentingEnabled: {
-
-                enabled: true
-
-              },
+                  },
 
 
-              /*
-               * Կարևոր.
-               *
-               * Այստեղ գաղտնի բանալի չկա։
-               *
-               * /stripo/token-ը պետք է լինի
-               * քո սերվերի endpoint-ը։
-               */
+                onUserListChange:
+                  function(usersList) {
 
-              onTokenRefreshRequest:
-                function(callback) {
+                    const avatars =
+                      document.getElementById(
+                        "avatars"
+                      );
 
-                  fetch(
-                    "/stripo/token",
-                    {
-                      method: "POST",
 
-                      credentials: "include",
+                    avatars.innerHTML = "";
 
-                      headers: {
-                        "Content-Type":
-                          "application/json"
-                      },
 
-                      body: JSON.stringify({
+                    usersList.forEach(
+                      function(user) {
 
-                        userId: "1",
+                        const avatar =
+                          document.createElement(
+                            "div"
+                          );
 
-                        role: "user"
 
-                      })
+                        avatar.className =
+                          "avatar-preview";
 
-                    }
-                  )
-                  .then(
-                    function(response) {
 
-                      if (
-                        !response.ok
-                      ) {
+                        avatar.style.backgroundImage =
+                          "url('" +
+                          user.avatar +
+                          "')";
 
-                        throw new Error(
-                          "Token request failed"
+
+                        avatars.appendChild(
+                          avatar
                         );
 
                       }
-
-                      return response.json();
-
-                    }
-                  )
-                  .then(
-                    function(data) {
-
-                      if (
-                        !data ||
-                        !data.token
-                      ) {
-
-                        throw new Error(
-                          "Token missing"
-                        );
-
-                      }
-
-
-                      callback(
-                        data.token
-                      );
-
-                    }
-                  )
-                  .catch(
-                    function(error) {
-
-                      console.error(
-                        error
-                      );
-
-
-                      notifications.error(
-                        "Stripo authentication failed."
-                      );
-
-                    }
-                  );
-
-                },
-
-
-              onUserListChange:
-                function(usersList) {
-
-                  const avatars =
-                    document.getElementById(
-                      "avatars"
                     );
 
-
-                  avatars.innerHTML = "";
-
-
-                  usersList.forEach(
-                    function(user) {
-
-                      const avatar =
-                        document.createElement(
-                          "div"
-                        );
+                  },
 
 
-                      avatar.className =
-                        "avatar-preview";
+                codeEditorButtonSelector:
+                  "#codeEditor",
 
 
-                      avatar.style.backgroundImage =
-                        "url('" +
-                        user.avatar +
-                        "')";
+                undoButtonSelector:
+                  "#undoButton",
 
 
-                      avatars.appendChild(
-                        avatar
-                      );
-
-                    }
-                  );
-
-                },
+                redoButtonSelector:
+                  "#redoButton",
 
 
-              codeEditorButtonSelector:
-                "#codeEditor",
+                mobileViewButtonSelector:
+                  "#mobileViewButton",
 
 
-              undoButtonSelector:
-                "#undoButton",
+                desktopViewButtonSelector:
+                  "#desktopViewButton",
 
 
-              redoButtonSelector:
-                "#redoButton",
+                keepModuleStylesEnabled:
+                  true,
 
 
-              mobileViewButtonSelector:
-                "#mobileViewButton",
+                notifications: {
 
+                  info:
+                    notifications.info.bind(
+                      notifications
+                    ),
 
-              desktopViewButtonSelector:
-                "#desktopViewButton",
+                  error:
+                    notifications.error.bind(
+                      notifications
+                    ),
 
+                  warn:
+                    notifications.warn.bind(
+                      notifications
+                    ),
 
-              keepModuleStylesEnabled:
-                true,
+                  loader:
+                    function() {},
 
+                  hide:
+                    notifications.hide.bind(
+                      notifications
+                    ),
 
-              notifications: {
+                  success:
+                    notifications.success.bind(
+                      notifications
+                    )
 
-                info:
-                  notifications.info.bind(
-                    notifications
-                  ),
-
-                error:
-                  notifications.error.bind(
-                    notifications
-                  ),
-
-                warn:
-                  notifications.warn.bind(
-                    notifications
-                  ),
-
-                loader:
-                  function() {},
-
-                hide:
-                  notifications.hide.bind(
-                    notifications
-                  ),
-
-                success:
-                  notifications.success.bind(
-                    notifications
-                  )
+                }
 
               }
 
-            }
+            );
 
-          );
+          }
+
+          catch(error) {
+
+            console.error(
+              "Stripo initialization error:",
+              error
+            );
+
+
+            notifications.error(
+              "Stripo authentication failed."
+            );
+
+          }
 
         };
 
