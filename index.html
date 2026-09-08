@@ -198,13 +198,54 @@
       req.send(data);
     }
 
-    function loadDemoTemplate(callback) {
-      request('GET', 'https://raw.githubusercontent.com/ardas/stripo-plugin/master/Public-Templates/Basic-Templates/Trigger%20newsletter%20mockup/Trigger%20newsletter%20mockup.html', null, function(html) {
-        request('GET', 'https://raw.githubusercontent.com/ardas/stripo-plugin/master/Public-Templates/Basic-Templates/Trigger%20newsletter%20mockup/Trigger%20newsletter%20mockup.css', null, function(css) {
-          callback({html: html, css: css});
-        });
-      });
-    }
+  function loadDemoTemplate(callback) {
+    // Stripo-ի ստանդարտ HTML կառուցվածքը
+    var validStripoHtml = `
+      <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+      <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <meta charset="UTF-8">
+        <title>Email Template</title>
+      </head>
+      <body>
+        <div class="es-wrapper-color">
+          <table class="es-wrapper" width="100%" cellspacing="0" cellpadding="0">
+            <tr>
+              <td valign="top">
+                <table class="es-content" cellspacing="0" cellpadding="0" align="center">
+                  <tr>
+                    <td class="esd-stripe" align="center">
+                      <table class="es-content-body" width="600" cellspacing="0" cellpadding="0" bgcolor="#ffffff" align="center">
+                        <tr>
+                          <td class="esd-structure es-p20t es-p20b es-p20r es-p20l" align="left">
+                            <table width="100%" cellspacing="0" cellpadding="0">
+                              <tr>
+                                <td class="esd-container-frame" width="560" valign="top" align="center">
+                                  <table width="100%" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                      <td class="esd-block-text" align="left">
+                                        <p>Սկսեք քաշել (drag & drop) բլոկները այստեղ...</p>
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </body>
+      </html>`;
+  
+    callback({ html: validStripoHtml, css: "" });
+  }
 
     document.querySelectorAll('.viewSwitcher button').forEach(function(button) {
       button.addEventListener('click', function(e) {
@@ -354,6 +395,8 @@
         window.UIEditor.initEditor(
           document.querySelector('#stripoEditorContainer'),
           {
+            ampPage: true,       // Ակտիվացնում է AMP / Interactive վիջեթները
+            ignoreAmp: false,    // Թույլ է տալիս ցուցադրել AMP էլեմենտները
             brandColorPalette: [
               {name: "Name1", value: "#35882C"},
               {value: "white"},
@@ -373,9 +416,9 @@
             },
             notificationsApi: {
               enabled: true,
-               url: "https://unicycle-paper-oxidize.ngrok-free.dev",
-               login: "0059+a@wearehackerone.com",
-               password: "Admin123456#a"
+              url: "https://unicycle-paper-oxidize.ngrok-free.dev",
+              login: "0059+a@wearehackerone.com",
+              password: "Admin123456#a"
             },
             onTokenRefreshRequest: function (callback) {
               request('POST', 'https://plugins.stripo.email/api/v1/auth',
