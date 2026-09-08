@@ -10,6 +10,12 @@
 
   <title>Stripo Free Plugin Editor</title>
 
+  <script
+  id="UiEditorScript"
+  type="module"
+  src="https://plugins.stripo.email/resources/uieditor/latest/UIEditor.js"
+  ></script>
+
   <style>
     * {
       box-sizing: border-box;
@@ -379,7 +385,7 @@
      * Available Plugin roles are handled by Stripo.
      * USER is the normal editor role.
      */
-    userId: "demo-user-1",
+    userId: "1",
 
     /*
      * Your application-level user identifier.
@@ -604,16 +610,19 @@
         },
 
         body: JSON.stringify({
-
+        
           pluginId:
             STRIPO_CONFIG.pluginId,
-
+        
           secretKey:
             STRIPO_CONFIG.secretKey,
-
+        
+          userId:
+            STRIPO_CONFIG.userId,
+        
           role:
             STRIPO_CONFIG.role
-
+        
         })
       }
     );
@@ -694,28 +703,6 @@
       setStatus(
         "Authenticating with Stripo..."
       );
-
-
-      /*
-       * Load Stripo UIEditor module.
-       */
-
-      await import(
-        "https://plugins.stripo.email/resources/uieditor/latest/UIEditor.js"
-      );
-
-
-      if (
-        !window.UIEditor ||
-        typeof window.UIEditor.initEditor !==
-          "function"
-      ) {
-
-        throw new Error(
-          "Stripo UIEditor was not loaded."
-        );
-
-      }
 
 
       const template =
@@ -981,13 +968,16 @@
        * ------------------------------------------------------
        */
 
-      stripoEditor =
-        await window.UIEditor.initEditor(
-          document.getElementById(
-            "stripo-editor"
-          ),
-          config
+      const domContainer =
+        document.getElementById(
+          "stripo-editor"
         );
+      
+      stripoEditor =
+        window.UIEditor.initEditor(
+          domContainer,
+          config
+        );  
 
 
       editorReady = true;
