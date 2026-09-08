@@ -1,1488 +1,1718 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Stripo Plugin Example</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Stripo Free Plugin Editor</title>
 
   <style>
     * {
-      margin: 0;
-      padding: 0;
       box-sizing: border-box;
     }
 
     html,
     body {
-      min-width: 1200px;
+      margin: 0;
+      padding: 0;
+      width: 100%;
       height: 100%;
-      font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Roboto,
-        Oxygen,
-        Ubuntu,
-        Cantarell,
-        sans-serif;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      background: #f5f6f8;
     }
 
-    #externalSystemContainer {
-      height: 65px;
-      padding: 12px 24px;
+    #app {
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* =========================================================
+       HEADER
+       ========================================================= */
+
+    #toolbar {
+      height: 58px;
+      min-height: 58px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      background: linear-gradient(to right, #ffffff, #fafafa);
-      border-bottom: 1px solid #e1e1e1;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    }
-
-    .plugin-title {
-      color: #6b6b6b;
-      font-size: 18px;
-      font-weight: 600;
-    }
-
-    .control-button {
-      padding: 8px 16px;
-      border: 1px solid #e1e1e1;
-      border-radius: 8px;
+      gap: 8px;
+      padding: 0 12px;
       background: #ffffff;
-      color: #4a4a4a;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s ease;
+      border-bottom: 1px solid #ddd;
+      z-index: 1000;
     }
 
-    .control-button:hover {
-      background: #f8f8f8;
-      border-color: #c5c5c5;
-    }
-
-    .control-button.active {
-      background: #34c759;
-      border-color: #34c759;
-      color: #ffffff;
-    }
-
-    .btn-group {
+    .toolbar-left {
       display: flex;
-      gap: 1px;
-      padding: 1px;
-      background: #e1e1e1;
-      border-radius: 8px;
+      align-items: center;
+      gap: 8px;
     }
 
-    .btn-group button {
-      padding: 8px 16px;
-      border: none;
-      background: #ffffff;
-      color: #6b6b6b;
-      font-size: 14px;
-      font-weight: 500;
+    .toolbar-center {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    button {
+      border: 1px solid #d7dbe0;
+      background: #fff;
+      border-radius: 6px;
+      padding: 7px 11px;
       cursor: pointer;
+      font-size: 13px;
     }
 
-    .btn-group button:first-child {
-      border-radius: 7px 0 0 7px;
+    button:hover {
+      background: #f1f3f5;
     }
 
-    .btn-group button:last-child {
-      border-radius: 0 7px 7px 0;
+    button.primary {
+      background: #111827;
+      border-color: #111827;
+      color: #fff;
     }
 
-    .btn-group button.active {
-      background: #34c759;
-      color: #ffffff;
+    button.primary:hover {
+      background: #1f2937;
     }
 
-    .btn-group button:disabled {
-      opacity: 0.5;
+    button:disabled {
+      opacity: .45;
       cursor: not-allowed;
     }
 
-    #stripoEditorContainer {
-      height: calc(100% - 103px);
-      background: #f5f5f7;
+    .device-button.active {
+      background: #e9ecef;
     }
 
-    .warning-bar {
-      height: 38px;
-      padding: 8px 24px;
-      background: #fef3c7;
-      border-bottom: 1px solid #f59e0b;
-      text-align: center;
-      color: #92400e;
-      font-size: 13px;
-      font-weight: 500;
+    /* =========================================================
+       EDITOR
+       ========================================================= */
+
+    #editor-wrapper {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+      width: 100%;
     }
 
-    .warning-bar span {
-      color: #d97706;
-      font-weight: 700;
+    #stripo-editor {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
     }
 
-    .notification-zone {
+    /* =========================================================
+       LOADING
+       ========================================================= */
+
+    #loading {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,.96);
+      z-index: 2000;
+      font-size: 15px;
+    }
+
+    #loading.hidden {
+      display: none;
+    }
+
+    /* =========================================================
+       ERROR
+       ========================================================= */
+
+    #error {
       position: fixed;
-      right: 30px;
-      bottom: 80px;
-      width: 700px;
-      max-width: 90%;
-      z-index: 99999;
-    }
-
-    .alert {
-      margin-bottom: 10px;
-      padding: 16px 20px;
+      left: 20px;
+      right: 20px;
+      bottom: 20px;
+      padding: 14px 16px;
+      background: #b91c1c;
+      color: white;
       border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      display: none;
+      z-index: 5000;
+      white-space: pre-wrap;
+      font-size: 13px;
     }
 
-    .alert-success {
-      color: #0f5d0f;
-      background: #e6f7e6;
-      border-left: 4px solid #28a745;
+    #error.visible {
+      display: block;
     }
 
-    .alert-info {
-      color: #004085;
-      background: #e7f3ff;
-      border-left: 4px solid #007bff;
+    /* =========================================================
+       MODAL
+       ========================================================= */
+
+    #code-modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,.55);
+      z-index: 4000;
     }
 
-    .alert-danger {
-      color: #721c24;
-      background: #f8d7da;
-      border-left: 4px solid #dc3545;
+    #code-modal.visible {
+      display: flex;
     }
 
-    .alert-warning {
-      color: #856404;
-      background: #fff3cd;
-      border-left: 4px solid #ffc107;
+    .modal {
+      width: min(1100px, 94vw);
+      height: min(750px, 90vh);
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
 
-    .avatar-preview {
-      width: 34px;
-      height: 34px;
-      margin-left: 5px;
-      display: inline-block;
-      border-radius: 15px;
-      background-size: cover;
-      background-position: center;
+    .modal-header {
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .modal-body {
+      flex: 1;
+      min-height: 0;
+      padding: 12px;
+    }
+
+    #html-output {
+      width: 100%;
+      height: 100%;
+      resize: none;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 12px;
+      font-family: monospace;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    /* =========================================================
+       STATUS
+       ========================================================= */
+
+    #status {
+      font-size: 12px;
+      color: #6b7280;
     }
   </style>
 </head>
 
 <body>
 
-  <div id="externalSystemContainer">
+<div id="app">
 
-    <div class="plugin-title">
-      Stripo Plugin
-    </div>
+  <!-- =======================================================
+       TOOLBAR
+       ======================================================== -->
 
-    <div class="btn-group">
+  <div id="toolbar">
 
-      <button id="undoButton">
-        Undo
+    <div class="toolbar-left">
+
+      <button id="undoButton" title="Undo">
+        ↶
+      </button>
+
+      <button id="redoButton" title="Redo">
+        ↷
       </button>
 
       <button
-        id="versionHistoryUndoButton"
-        style="display:none"
-        disabled
-      >
-        Undo
-      </button>
-
-      <button id="versionHistoryButton">
-        History
-      </button>
-
-      <button id="redoButton">
-        Redo
-      </button>
-
-      <button
-        id="versionHistoryRedoButton"
-        style="display:none"
-        disabled
-      >
-        Redo
-      </button>
-
-    </div>
-
-    <div>
-
-      <button
-        id="codeEditor"
-        class="control-button"
-      >
-        Code editor
-      </button>
-
-    </div>
-
-    <div
-      id="viewSwitcher"
-      class="btn-group"
-    >
-
-      <button
-        id="desktopViewButton"
-        class="active"
+        id="desktopButton"
+        class="device-button active"
       >
         Desktop
       </button>
 
-      <button id="mobileViewButton">
+      <button
+        id="mobileButton"
+        class="device-button"
+      >
         Mobile
       </button>
 
     </div>
 
-    <div
-      id="versionHistoryViewSwitcher"
-      class="btn-group"
-      style="display:none"
-    >
+    <div class="toolbar-center">
 
-      <button
-        id="historyDesktopButton"
-        class="active"
-      >
-        Desktop
-      </button>
-
-      <button id="historyMobileButton">
-        Mobile
-      </button>
+      <span id="status">
+        Initializing Stripo...
+      </span>
 
     </div>
 
-    <div>
+    <div class="toolbar-right">
+
+      <button id="codeButton">
+        HTML
+      </button>
+
+      <button id="getTemplateButton">
+        Get HTML
+      </button>
+
+      <button id="compileButton">
+        Compile
+      </button>
 
       <button
         id="saveButton"
-        class="control-button"
+        class="primary"
       >
-        Manual Save
-      </button>
-
-      <button
-        id="getTemplateButton"
-        class="control-button"
-      >
-        getTemplate
-      </button>
-
-      <button
-        id="compileEmailButton"
-        class="control-button"
-      >
-        compileEmail
+        Save
       </button>
 
     </div>
 
-    <div id="avatars"></div>
+  </div>
+
+
+  <!-- =======================================================
+       EDITOR
+       ======================================================== -->
+
+  <div id="editor-wrapper">
+
+    <div id="stripo-editor"></div>
+
+    <div id="loading">
+      Loading Stripo editor...
+    </div>
 
   </div>
 
-  <div class="warning-bar">
-    <span>⚠️ Please be advised:</span>
-    The header shown above is not part of the
-    Stripo plugin. It is only an example.
+</div>
+
+
+<!-- =========================================================
+     ERROR
+     ========================================================== -->
+
+<div id="error"></div>
+
+
+<!-- =========================================================
+     HTML MODAL
+     ========================================================== -->
+
+<div id="code-modal">
+
+  <div class="modal">
+
+    <div class="modal-header">
+
+      <strong>
+        Email HTML
+      </strong>
+
+      <button id="closeCodeButton">
+        Close
+      </button>
+
+    </div>
+
+    <div class="modal-body">
+
+      <textarea
+        id="html-output"
+        spellcheck="false"
+      ></textarea>
+
+    </div>
+
   </div>
 
-  <div class="notification-zone"></div>
-
-  <div id="stripoEditorContainer"></div>
-
-  <!-- Notifications -->
-
-  <script>
-    const notifications = {
-
-      container:
-        document.querySelector(".notification-zone"),
-
-      timeout: 10000,
-
-      show(type, text, id) {
-
-        if (
-          id &&
-          document.getElementById(id)
-        ) {
-          return;
-        }
-
-        const element =
-          document.createElement("div");
-
-        element.className =
-          "alert alert-" + type;
-
-        element.textContent = text;
-
-        if (id) {
-          element.id = id;
-        }
-
-        this.container.appendChild(element);
-
-        setTimeout(
-          () => {
-
-            if (element.isConnected) {
-              element.remove();
-            }
-
-          },
-          this.timeout
-        );
-
-      },
-
-      success(text, id) {
-        this.show("success", text, id);
-      },
-
-      info(text, id) {
-        this.show("info", text, id);
-      },
-
-      error(text, id) {
-        this.show("danger", text, id);
-      },
-
-      warn(text, id) {
-        this.show("warning", text, id);
-      },
-
-      hide(id) {
-
-        const element =
-          document.getElementById(id);
-
-        if (element) {
-          element.remove();
-        }
-
-      }
-
-    };
-  </script>
+</div>
 
 
-  <!-- Stripo credentials -->
+<script type="module">
 
-  <script>
+  /* =========================================================
+     STRIPO CREDENTIALS
+     =========================================================
+
+     PUT YOUR VALUES HERE.
+
+     DO NOT PUBLISH THIS FILE WITH A REAL SECRET KEY.
+     Browser-side JavaScript exposes the secret to the client.
+     ========================================================= */
+
+  const STRIPO_CONFIG = {
+
+    pluginId: "PUT_YOUR_PLUGIN_ID_HERE",
+
+    secretKey: "PUT_YOUR_SECRET_KEY_HERE",
 
     /*
-     * ՏԵՂԱԴՐԻՐ ՔՈ ԱՐԺԵՔՆԵՐԸ ԱՅՍՏԵՂ
+     * Stripo role.
      *
-     * pluginId  -> քո Stripo plugin ID
-     * secretKey -> քո Stripo secret key
+     * Available Plugin roles are handled by Stripo.
+     * USER is the normal editor role.
      */
+    role: "USER",
 
-    const STRIPO_CONFIG = {
+    /*
+     * Your application-level user identifier.
+     *
+     * This is YOUR identifier for the person using the editor.
+     * Do not put passwords here.
+     */
+    userId: "demo-user-1"
 
-      pluginId:
-        "d326e98a6b764852ab08f662c5b036b1",
+  };
 
-      secretKey:
-        "c10bc09bee04426a9eec888a18e629a8",
 
-      userId:
-        "1",
+  /* =========================================================
+     GLOBAL STATE
+     ========================================================= */
 
-      role:
-        "USER"
+  let stripoEditor = null;
 
+  let currentToken = null;
+
+  let tokenExpiresAt = 0;
+
+  let currentHtml = "";
+
+  let currentCss = "";
+
+  let editorReady = false;
+
+
+  /* =========================================================
+     DOM
+     ========================================================= */
+
+  const loadingElement =
+    document.getElementById("loading");
+
+  const errorElement =
+    document.getElementById("error");
+
+  const statusElement =
+    document.getElementById("status");
+
+  const codeModal =
+    document.getElementById("code-modal");
+
+  const htmlOutput =
+    document.getElementById("html-output");
+
+
+  /* =========================================================
+     ERROR HANDLING
+     ========================================================= */
+
+  function showError(message) {
+
+    console.error(message);
+
+    errorElement.textContent = message;
+
+    errorElement.classList.add("visible");
+
+    statusElement.textContent = "Error";
+
+  }
+
+
+  function clearError() {
+
+    errorElement.textContent = "";
+
+    errorElement.classList.remove("visible");
+
+  }
+
+
+  /* =========================================================
+     STATUS
+     ========================================================= */
+
+  function setStatus(message) {
+
+    statusElement.textContent = message;
+
+  }
+
+
+  /* =========================================================
+     DEMO EMAIL
+     ========================================================= */
+
+  function getInitialTemplate() {
+
+    return {
+      html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Stripo Email</title>
+</head>
+
+<body style="margin:0;padding:0;background:#f4f4f4;">
+
+  <table
+    width="100%"
+    cellpadding="0"
+    cellspacing="0"
+    border="0"
+    style="background:#f4f4f4;"
+  >
+
+    <tr>
+
+      <td align="center">
+
+        <table
+          width="600"
+          cellpadding="0"
+          cellspacing="0"
+          border="0"
+          style="
+            width:600px;
+            max-width:100%;
+            background:#ffffff;
+          "
+        >
+
+          <tr>
+
+            <td
+              style="
+                padding:40px;
+                font-family:Arial,sans-serif;
+                text-align:center;
+              "
+            >
+
+              <h1>
+                Welcome to Stripo
+              </h1>
+
+              <p>
+                Start editing this email with the
+                Stripo editor.
+              </p>
+
+              <p>
+                This template is intentionally simple
+                so the editor can load it immediately.
+              </p>
+
+            </td>
+
+          </tr>
+
+        </table>
+
+      </td>
+
+    </tr>
+
+  </table>
+
+</body>
+</html>
+      `.trim(),
+
+      css: ""
     };
 
-
-    let stripoToken = null;
-
-
-    async function getStripoToken() {
-
-      const response =
-        await fetch(
-          "https://plugins.stripo.email/api/v1/auth",
-          {
-            method: "POST",
-
-            headers: {
-              "Content-Type":
-                "application/json"
-            },
-
-            body: JSON.stringify({
-
-              pluginId:
-                STRIPO_CONFIG.pluginId,
-
-              secretKey:
-                STRIPO_CONFIG.secretKey,
-
-              userId:
-                STRIPO_CONFIG.userId,
-
-              role:
-                STRIPO_CONFIG.role
-
-            })
-
-          }
-        );
+  }
 
 
-      if (!response.ok) {
+  /* =========================================================
+     STRIPO AUTHENTICATION
+     =========================================================
 
-        throw new Error(
-          "Stripo authentication failed: HTTP " +
-          response.status
-        );
+     Stripo documentation uses:
 
+       POST
+       https://plugins.stripo.email/api/v1/auth
+
+     with pluginId / secretKey / role.
+
+     The returned token is then supplied to the Plugin.
+     ========================================================= */
+
+  async function requestStripoToken() {
+
+    if (
+      !STRIPO_CONFIG.pluginId ||
+      STRIPO_CONFIG.pluginId ===
+        "d326e98a6b764852ab08f662c5b036b1"
+    ) {
+
+      throw new Error(
+        "STRIPO_CONFIG.pluginId is not configured."
+      );
+
+    }
+
+    if (
+      !STRIPO_CONFIG.secretKey ||
+      STRIPO_CONFIG.secretKey ===
+        "c10bc09bee04426a9eec888a18e629a8"
+    ) {
+
+      throw new Error(
+        "STRIPO_CONFIG.secretKey is not configured."
+      );
+
+    }
+
+
+    const response = await fetch(
+      "https://plugins.stripo.email/api/v1/auth",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+
+          pluginId:
+            STRIPO_CONFIG.pluginId,
+
+          secretKey:
+            STRIPO_CONFIG.secretKey,
+
+          role:
+            STRIPO_CONFIG.role
+
+        })
       }
+    );
 
 
-      const data =
-        await response.json();
+    if (!response.ok) {
+
+      const body =
+        await response.text();
+
+      throw new Error(
+        "Stripo authentication failed: " +
+        response.status +
+        "\n" +
+        body
+      );
+
+    }
+
+
+    const data =
+      await response.json();
+
+
+    if (!data.token) {
+
+      throw new Error(
+        "Stripo authentication response did not contain a token."
+      );
+
+    }
+
+
+    currentToken =
+      data.token;
+
+
+    /*
+     * The exact expiration period can vary.
+     * Keep a short local lifetime and refresh when needed.
+     */
+    tokenExpiresAt =
+      Date.now() + (45 * 60 * 1000);
+
+
+    return currentToken;
+
+  }
+
+
+  async function getValidStripoToken() {
+
+    if (
+      currentToken &&
+      Date.now() < tokenExpiresAt
+    ) {
+
+      return currentToken;
+
+    }
+
+
+    return await requestStripoToken();
+
+  }
+
+
+  /* =========================================================
+     INITIALIZE UIEDITOR
+     ========================================================= */
+
+  async function initEditor() {
+
+    try {
+
+      clearError();
+
+      setStatus(
+        "Authenticating with Stripo..."
+      );
+
+
+      /*
+       * Load Stripo UIEditor module.
+       */
+
+      await import(
+        "https://plugins.stripo.email/resources/uieditor/latest/UIEditor.js"
+      );
 
 
       if (
-        !data ||
-        !data.token
+        !window.UIEditor ||
+        typeof window.UIEditor.initEditor !==
+          "function"
       ) {
 
         throw new Error(
-          "Stripo authentication token was not returned."
+          "Stripo UIEditor was not loaded."
         );
 
       }
 
 
-      stripoToken =
-        data.token;
+      const template =
+        getInitialTemplate();
 
 
-      return stripoToken;
+      currentHtml =
+        template.html;
 
-    }
+      currentCss =
+        template.css;
 
-  </script>
 
+      /*
+       * Initial authentication.
+       */
 
-  <!-- Demo email template -->
+      const token =
+        await getValidStripoToken();
 
-  <script>
 
-    function loadDemoTemplate(callback) {
+      setStatus(
+        "Starting Stripo editor..."
+      );
 
-      const html = `
 
-<!DOCTYPE html>
+      /*
+       * Stripo editor configuration.
+       *
+       * These are client-side features/configuration.
+       * Paid-only server functionality is deliberately
+       * not faked/enabled here.
+       */
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+      const config = {
 
-<head>
+        /* ---------------------------------------------------
+           AMP
+           --------------------------------------------------- */
 
-  <meta charset="UTF-8">
+        ampPage: true,
 
-  <title>Email Template</title>
+        ignoreAmp: false,
 
-</head>
 
-<body>
+        /* ---------------------------------------------------
+           BRAND COLORS
+           --------------------------------------------------- */
 
-  <div class="es-wrapper-color">
+        brandColorPalette: [
 
-    <table
-      class="es-wrapper"
-      width="100%"
-      cellspacing="0"
-      cellpadding="0"
-    >
+          "#111827",
+          "#2563eb",
+          "#7c3aed",
+          "#db2777",
+          "#dc2626",
+          "#ea580c",
+          "#ca8a04",
+          "#16a34a",
+          "#0891b2",
 
-      <tr>
+          "#000000",
+          "#ffffff",
+          "#f3f4f6",
+          "#e5e7eb",
+          "#9ca3af"
 
-        <td valign="top">
+        ],
 
-          <table
-            class="es-content"
-            cellspacing="0"
-            cellpadding="0"
-            align="center"
-          >
 
-            <tr>
+        /* ---------------------------------------------------
+           CUSTOM FONT SIZES
+           ---------------------------------------------------
 
-              <td
-                class="esd-stripe"
-                align="center"
-              >
+           Stripo documents custom font sizes as available
+           on Free.
+        */
 
-                <table
-                  class="es-content-body"
-                  width="600"
-                  cellspacing="0"
-                  cellpadding="0"
-                  bgcolor="#ffffff"
-                  align="center"
-                >
+        editorFontSizes: {
 
-                  <tr>
+          showDefaultStandardFontsSizes: true,
 
-                    <td
-                      class="
-                        esd-structure
-                        es-p20t
-                        es-p20b
-                        es-p20r
-                        es-p20l
-                      "
-                      align="left"
-                    >
+          showDefaultNotStandardFontsSizes: true,
 
-                      <table
-                        width="100%"
-                        cellspacing="0"
-                        cellpadding="0"
-                      >
+          customFontsSizes: [
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            20,
+            22,
+            24,
+            26,
+            28,
+            30,
+            32,
+            36,
+            40,
+            44,
+            48,
+            52,
+            56,
+            60
+          ]
 
-                        <tr>
+        },
 
-                          <td
-                            class="esd-container-frame"
-                            width="560"
-                            valign="top"
-                            align="center"
-                          >
 
-                            <table
-                              width="100%"
-                              cellspacing="0"
-                              cellpadding="0"
-                            >
+        /* ---------------------------------------------------
+           INITIAL TEMPLATE
+           --------------------------------------------------- */
 
-                              <tr>
+        html:
+          currentHtml,
 
-                                <td
-                                  class="esd-block-text"
-                                  align="left"
-                                >
+        css:
+          currentCss,
 
-                                  <p>
-                                    Սկսեք քաշել
-                                    բլոկները այստեղ...
-                                  </p>
 
-                                </td>
+        /* ---------------------------------------------------
+           METADATA
+           --------------------------------------------------- */
 
-                              </tr>
+        metadata: {
 
-                            </table>
+          emailId:
+            "demo-email-1",
 
-                          </td>
+          userId:
+            STRIPO_CONFIG.userId,
 
-                        </tr>
+          role:
+            STRIPO_CONFIG.role
 
-                      </table>
+        },
 
-                    </td>
 
-                  </tr>
+        /* ---------------------------------------------------
+           LOCALE
+           --------------------------------------------------- */
 
-                </table>
+        locale: "en",
 
-              </td>
 
-            </tr>
+        /* ---------------------------------------------------
+           COMMENTING
+           --------------------------------------------------- */
 
-          </table>
+        commentingEnabled: false,
 
-        </td>
 
-      </tr>
+        /* ---------------------------------------------------
+           MODULE STYLES
+           --------------------------------------------------- */
 
-    </table>
+        keepModuleStylesEnabled: true,
 
-  </div>
 
-</body>
+        /* ---------------------------------------------------
+           AUTH TOKEN
+           ---------------------------------------------------
 
-</html>
+           Called by Stripo whenever it needs a fresh token.
+        */
 
-      `;
+        onTokenRefreshRequest:
+          async function(callback) {
 
+            try {
 
-      callback({
+              const freshToken =
+                await requestStripoToken();
 
-        html: html,
+              callback(freshToken);
 
-        css: ""
+            } catch (error) {
 
-      });
+              console.error(
+                "Token refresh error:",
+                error
+              );
 
-    }
+              showError(
+                error.message ||
+                "Unable to refresh Stripo token."
+              );
 
-  </script>
+            }
 
+          },
 
-  <!-- Stripo API actions -->
 
-  <script>
+        /* ---------------------------------------------------
+           USER LIST
+           --------------------------------------------------- */
 
-    function getStripoApi() {
+        onUserListChange:
+          function(users) {
 
-      if (!window.StripoEditorApi) {
+            console.log(
+              "Stripo user list:",
+              users
+            );
 
-        notifications.error(
-          "Stripo editor-ը դեռ պատրաստ չէ։"
+          },
+
+
+        /* ---------------------------------------------------
+           NOTIFICATIONS
+           --------------------------------------------------- */
+
+        notifications: {
+
+          success: function(message) {
+
+            console.log(
+              "Stripo success:",
+              message
+            );
+
+          },
+
+          error: function(message) {
+
+            console.error(
+              "Stripo error:",
+              message
+            );
+
+          },
+
+          warning: function(message) {
+
+            console.warn(
+              "Stripo warning:",
+              message
+            );
+
+          },
+
+          info: function(message) {
+
+            console.info(
+              "Stripo info:",
+              message
+            );
+
+          }
+
+        }
+
+      };
+
+
+      /*
+       * ------------------------------------------------------
+       * INIT EDITOR
+       * ------------------------------------------------------
+       */
+
+      stripoEditor =
+        await window.UIEditor.initEditor(
+          document.getElementById(
+            "stripo-editor"
+          ),
+          config
         );
+
+
+      editorReady = true;
+
+
+      loadingElement.classList.add(
+        "hidden"
+      );
+
+
+      setStatus(
+        "Stripo editor ready"
+      );
+
+
+      console.log(
+        "Stripo editor initialized:",
+        stripoEditor
+      );
+
+
+    } catch (error) {
+
+      loadingElement.classList.add(
+        "hidden"
+      );
+
+      showError(
+        error.stack ||
+        error.message ||
+        String(error)
+      );
+
+    }
+
+  }
+
+
+  /* =========================================================
+     STRIPO API ACCESS
+     ========================================================= */
+
+  function getEditorApi() {
+
+    if (!editorReady) {
+
+      throw new Error(
+        "Stripo editor is not ready."
+      );
+
+    }
+
+
+    /*
+     * Depending on the currently loaded UIEditor version,
+     * Stripo exposes the editor API through the editor object.
+     */
+
+    if (
+      stripoEditor &&
+      stripoEditor.actionsApi
+    ) {
+
+      return stripoEditor.actionsApi;
+
+    }
+
+
+    if (
+      window.StripoEditorApi &&
+      window.StripoEditorApi.actionsApi
+    ) {
+
+      return window.StripoEditorApi.actionsApi;
+
+    }
+
+
+    return null;
+
+  }
+
+
+  /* =========================================================
+     GET TEMPLATE
+     ========================================================= */
+
+  async function getTemplateData() {
+
+    const api =
+      getEditorApi();
+
+
+    if (
+      api &&
+      typeof api.getTemplateData ===
+        "function"
+    ) {
+
+      return await api.getTemplateData();
+
+    }
+
+
+    /*
+     * Legacy fallback.
+     */
+
+    if (
+      window.StripoApi &&
+      typeof window.StripoApi.getTemplate ===
+        "function"
+    ) {
+
+      return await new Promise(
+        (resolve, reject) => {
+
+          try {
+
+            window.StripoApi.getTemplate(
+              function(html, css) {
+
+                resolve({
+                  html: html || "",
+                  css: css || ""
+                });
+
+              }
+            );
+
+          } catch (error) {
+
+            reject(error);
+
+          }
+
+        }
+      );
+
+    }
+
+
+    throw new Error(
+      "Stripo getTemplate API is not available."
+    );
+
+  }
+
+
+  /* =========================================================
+     SAVE
+     ========================================================= */
+
+  async function saveTemplate() {
+
+    try {
+
+      clearError();
+
+      setStatus(
+        "Reading template..."
+      );
+
+
+      const template =
+        await getTemplateData();
+
+
+      currentHtml =
+        template.html ||
+        template.content ||
+        "";
+
+
+      currentCss =
+        template.css ||
+        "";
+
+
+      /*
+       * IMPORTANT:
+       *
+       * This saves the generated template locally.
+       *
+       * Stripo's paid AutoSaving/server persistence
+       * is NOT being falsely enabled.
+       */
+
+      const savedTemplate = {
+
+        html:
+          currentHtml,
+
+        css:
+          currentCss,
+
+        savedAt:
+          new Date().toISOString(),
+
+        userId:
+          STRIPO_CONFIG.userId
+
+      };
+
+
+      localStorage.setItem(
+        "stripo-free-template",
+        JSON.stringify(
+          savedTemplate
+        )
+      );
+
+
+      setStatus(
+        "Template saved locally"
+      );
+
+
+      console.log(
+        "Saved template:",
+        savedTemplate
+      );
+
+
+    } catch (error) {
+
+      showError(
+        error.message ||
+        String(error)
+      );
+
+    }
+
+  }
+
+
+  /* =========================================================
+     COMPILE EMAIL
+     ========================================================= */
+
+  async function compileEmail() {
+
+    try {
+
+      clearError();
+
+      setStatus(
+        "Compiling email..."
+      );
+
+
+      const api =
+        getEditorApi();
+
+
+      if (
+        api &&
+        typeof api.compileEmail ===
+          "function"
+      ) {
+
+        const result =
+          await api.compileEmail();
+
+
+        console.log(
+          "Compiled email:",
+          result
+        );
+
+
+        if (
+          typeof result === "string"
+        ) {
+
+          openCodeModal(result);
+
+        } else {
+
+          openCodeModal(
+            result.html ||
+            result.content ||
+            ""
+          );
+
+        }
+
+
+        setStatus(
+          "Email compiled"
+        );
+
+        return;
+
+      }
+
+
+      /*
+       * Fallback: return current template.
+       */
+
+      const template =
+        await getTemplateData();
+
+
+      openCodeModal(
+        template.html || ""
+      );
+
+
+      setStatus(
+        "Template HTML displayed"
+      );
+
+
+    } catch (error) {
+
+      showError(
+        error.message ||
+        String(error)
+      );
+
+    }
+
+  }
+
+
+  /* =========================================================
+     SHOW HTML
+     ========================================================= */
+
+  async function showTemplateHtml() {
+
+    try {
+
+      clearError();
+
+      const template =
+        await getTemplateData();
+
+
+      currentHtml =
+        template.html || "";
+
+
+      currentCss =
+        template.css || "";
+
+
+      openCodeModal(
+        currentHtml
+      );
+
+
+    } catch (error) {
+
+      showError(
+        error.message ||
+        String(error)
+      );
+
+    }
+
+  }
+
+
+  function openCodeModal(html) {
+
+    htmlOutput.value =
+      html || "";
+
+    codeModal.classList.add(
+      "visible"
+    );
+
+  }
+
+
+  function closeCodeModal() {
+
+    codeModal.classList.remove(
+      "visible"
+    );
+
+  }
+
+
+  /* =========================================================
+     UNDO / REDO
+     ========================================================= */
+
+  async function undo() {
+
+    try {
+
+      const api =
+        getEditorApi();
+
+
+      if (
+        api &&
+        typeof api.undo ===
+          "function"
+      ) {
+
+        await api.undo();
+
+        return;
+
+      }
+
+
+      if (
+        window.StripoApi &&
+        typeof window.StripoApi.undo ===
+          "function"
+      ) {
+
+        window.StripoApi.undo();
+
+        return;
+
+      }
+
+
+      console.warn(
+        "Undo API is not exposed by this UIEditor build."
+      );
+
+    } catch (error) {
+
+      showError(
+        error.message ||
+        String(error)
+      );
+
+    }
+
+  }
+
+
+  async function redo() {
+
+    try {
+
+      const api =
+        getEditorApi();
+
+
+      if (
+        api &&
+        typeof api.redo ===
+          "function"
+      ) {
+
+        await api.redo();
+
+        return;
+
+      }
+
+
+      if (
+        window.StripoApi &&
+        typeof window.StripoApi.redo ===
+          "function"
+      ) {
+
+        window.StripoApi.redo();
+
+        return;
+
+      }
+
+
+      console.warn(
+        "Redo API is not exposed by this UIEditor build."
+      );
+
+    } catch (error) {
+
+      showError(
+        error.message ||
+        String(error)
+      );
+
+    }
+
+  }
+
+
+  /* =========================================================
+     DEVICE VIEW
+     ========================================================= */
+
+  function setDesktopView() {
+
+    document
+      .getElementById("desktopButton")
+      .classList.add("active");
+
+    document
+      .getElementById("mobileButton")
+      .classList.remove("active");
+
+
+    try {
+
+      if (
+        stripoEditor &&
+        stripoEditor.previewApi &&
+        typeof
+          stripoEditor.previewApi.switchToDesktopPreview ===
+          "function"
+      ) {
+
+        stripoEditor
+          .previewApi
+          .switchToDesktopPreview();
+
+      }
+
+    } catch (error) {
+
+      console.warn(
+        "Desktop preview API unavailable:",
+        error
+      );
+
+    }
+
+  }
+
+
+  function setMobileView() {
+
+    document
+      .getElementById("mobileButton")
+      .classList.add("active");
+
+    document
+      .getElementById("desktopButton")
+      .classList.remove("active");
+
+
+    try {
+
+      if (
+        stripoEditor &&
+        stripoEditor.previewApi &&
+        typeof
+          stripoEditor.previewApi.switchToMobilePreview ===
+          "function"
+      ) {
+
+        stripoEditor
+          .previewApi
+          .switchToMobilePreview();
+
+      }
+
+    } catch (error) {
+
+      console.warn(
+        "Mobile preview API unavailable:",
+        error
+      );
+
+    }
+
+  }
+
+
+  /* =========================================================
+     BUTTON EVENTS
+     ========================================================= */
+
+  document
+    .getElementById("undoButton")
+    .addEventListener(
+      "click",
+      undo
+    );
+
+
+  document
+    .getElementById("redoButton")
+    .addEventListener(
+      "click",
+      redo
+    );
+
+
+  document
+    .getElementById("desktopButton")
+    .addEventListener(
+      "click",
+      setDesktopView
+    );
+
+
+  document
+    .getElementById("mobileButton")
+    .addEventListener(
+      "click",
+      setMobileView
+    );
+
+
+  document
+    .getElementById("saveButton")
+    .addEventListener(
+      "click",
+      saveTemplate
+    );
+
+
+  document
+    .getElementById("getTemplateButton")
+    .addEventListener(
+      "click",
+      showTemplateHtml
+    );
+
+
+  document
+    .getElementById("compileButton")
+    .addEventListener(
+      "click",
+      compileEmail
+    );
+
+
+  document
+    .getElementById("codeButton")
+    .addEventListener(
+      "click",
+      showTemplateHtml
+    );
+
+
+  document
+    .getElementById("closeCodeButton")
+    .addEventListener(
+      "click",
+      closeCodeModal
+    );
+
+
+  codeModal.addEventListener(
+    "click",
+    function(event) {
+
+      if (
+        event.target ===
+        codeModal
+      ) {
+
+        closeCodeModal();
+
+      }
+
+    }
+  );
+
+
+  /* =========================================================
+     LOCAL TEMPLATE RESTORE
+     ========================================================= */
+
+  function restoreLocalTemplate() {
+
+    try {
+
+      const raw =
+        localStorage.getItem(
+          "stripo-free-template"
+        );
+
+
+      if (!raw) {
 
         return null;
 
       }
 
-      return window.StripoEditorApi;
 
-    }
+      const saved =
+        JSON.parse(raw);
 
 
-    document
-      .getElementById("saveButton")
-      .addEventListener(
-        "click",
-        function () {
+      if (
+        !saved ||
+        typeof saved.html !==
+          "string"
+      ) {
 
-          const api =
-            getStripoApi();
+        return null;
 
-          if (!api) {
-            return;
-          }
-
-
-          api.actionsApi.save(
-            function(error) {
-
-              if (error) {
-
-                notifications.error(
-                  "Պահպանումը ձախողվեց։"
-                );
-
-                return;
-
-              }
-
-
-              notifications.success(
-                "Փոփոխությունները պահպանվեցին։"
-              );
-
-            }
-          );
-
-        }
-      );
-
-
-    document
-      .getElementById("getTemplateButton")
-      .addEventListener(
-        "click",
-        function () {
-
-          const api =
-            getStripoApi();
-
-          if (!api) {
-            return;
-          }
-
-
-          api.actionsApi.getTemplateData(
-            function(data) {
-
-              console.log(
-                "HTML:",
-                data.html
-              );
-
-              console.log(
-                "CSS:",
-                data.css
-              );
-
-            }
-          );
-
-
-          notifications.success(
-            "Տվյալները ուղարկվեցին դիտարկիչի վահանակ։"
-          );
-
-        }
-      );
-
-
-    document
-      .getElementById("compileEmailButton")
-      .addEventListener(
-        "click",
-        function () {
-
-          const api =
-            getStripoApi();
-
-          if (!api) {
-            return;
-          }
-
-
-          api.actionsApi.compileEmail({
-
-            callback:
-              function(
-                error,
-                html,
-                ampHtml,
-                ampErrors
-              ) {
-
-                if (error) {
-
-                  notifications.error(
-                    "Նամակի հավաքումը ձախողվեց։"
-                  );
-
-                  return;
-
-                }
-
-
-                console.log(
-                  "Compiled HTML:",
-                  html
-                );
-
-                console.log(
-                  "AMP HTML:",
-                  ampHtml
-                );
-
-                console.log(
-                  "AMP Errors:",
-                  ampErrors
-                );
-
-              }
-
-          });
-
-
-          notifications.success(
-            "Հավաքված HTML-ը հասանելի է դիտարկիչի վահանակում։"
-          );
-
-        }
-      );
-
-  </script>
-
-
-  <!-- View switching -->
-
-  <script>
-
-    document
-      .getElementById("codeEditor")
-      .addEventListener(
-        "click",
-        function () {
-
-          this.classList.toggle(
-            "active"
-          );
-
-        }
-      );
-
-
-    document
-      .querySelectorAll(
-        "#viewSwitcher button"
-      )
-      .forEach(
-        function(button) {
-
-          button.addEventListener(
-            "click",
-            function() {
-
-              document
-                .querySelectorAll(
-                  "#viewSwitcher button"
-                )
-                .forEach(
-                  function(btn) {
-
-                    btn.classList.remove(
-                      "active"
-                    );
-
-                  }
-                );
-
-
-              this.classList.add(
-                "active"
-              );
-
-            }
-          );
-
-        }
-      );
-
-  </script>
-
-
-  <!-- Version history -->
-
-  <script>
-
-    let isVersionHistoryOpened =
-      false;
-
-    let previousPatch;
-
-    let nextPatch;
-
-
-    function openVersionHistory() {
-
-      const api =
-        getStripoApi();
-
-      if (!api) {
-        return;
       }
 
 
-      document
-        .getElementById("undoButton")
-        .style.display = "none";
+      return saved;
 
+    } catch (error) {
 
-      document
-        .getElementById("redoButton")
-        .style.display = "none";
-
-
-      document
-        .getElementById(
-          "versionHistoryUndoButton"
-        )
-        .style.display = "block";
-
-
-      document
-        .getElementById(
-          "versionHistoryRedoButton"
-        )
-        .style.display = "block";
-
-
-      document
-        .getElementById(
-          "viewSwitcher"
-        )
-        .style.display = "none";
-
-
-      document
-        .getElementById(
-          "versionHistoryViewSwitcher"
-        )
-        .style.display = "flex";
-
-
-      api.versionHistoryApi.openVersionHistory(
-
-        function(state) {
-
-          isVersionHistoryOpened =
-            true;
-
-          previousPatch =
-            state.previousPatch;
-
-          nextPatch =
-            state.nextPatch;
-
-
-          document
-            .getElementById(
-              "versionHistoryUndoButton"
-            )
-            .disabled =
-              !previousPatch;
-
-
-          document
-            .getElementById(
-              "versionHistoryRedoButton"
-            )
-            .disabled =
-              !nextPatch;
-
-        },
-
-        function() {
-
-          isVersionHistoryOpened =
-            false;
-
-        }
-
+      console.warn(
+        "Could not restore local template:",
+        error
       );
+
+      return null;
 
     }
 
+  }
 
-    function closeVersionHistory() {
 
-      const api =
-        getStripoApi();
+  /* =========================================================
+     START
+     ========================================================= */
 
-      if (!api) {
-        return;
-      }
+  initEditor();
 
-
-      api.versionHistoryApi
-        .closeVersionHistory();
-
-
-      isVersionHistoryOpened =
-        false;
-
-
-      document
-        .getElementById("undoButton")
-        .style.display = "block";
-
-
-      document
-        .getElementById("redoButton")
-        .style.display = "block";
-
-
-      document
-        .getElementById(
-          "versionHistoryUndoButton"
-        )
-        .style.display = "none";
-
-
-      document
-        .getElementById(
-          "versionHistoryRedoButton"
-        )
-        .style.display = "none";
-
-
-      document
-        .getElementById(
-          "versionHistoryViewSwitcher"
-        )
-        .style.display = "none";
-
-
-      document
-        .getElementById(
-          "viewSwitcher"
-        )
-        .style.display = "flex";
-
-    }
-
-
-    document
-      .getElementById(
-        "versionHistoryButton"
-      )
-      .addEventListener(
-        "click",
-        function() {
-
-          if (
-            isVersionHistoryOpened
-          ) {
-
-            closeVersionHistory();
-
-          } else {
-
-            openVersionHistory();
-
-          }
-
-        }
-      );
-
-
-    document
-      .getElementById(
-        "versionHistoryUndoButton"
-      )
-      .addEventListener(
-        "click",
-        function() {
-
-          if (
-            !isVersionHistoryOpened ||
-            !previousPatch
-          ) {
-            return;
-          }
-
-
-          const api =
-            getStripoApi();
-
-          if (!api) {
-            return;
-          }
-
-
-          api.versionHistoryApi
-            .previewVersion(
-              previousPatch.id
-            );
-
-        }
-      );
-
-
-    document
-      .getElementById(
-        "versionHistoryRedoButton"
-      )
-      .addEventListener(
-        "click",
-        function() {
-
-          if (
-            !isVersionHistoryOpened ||
-            !nextPatch
-          ) {
-            return;
-          }
-
-
-          const api =
-            getStripoApi();
-
-          if (!api) {
-            return;
-          }
-
-
-          api.versionHistoryApi
-            .previewVersion(
-              nextPatch.id
-            );
-
-        }
-      );
-
-
-    document
-      .getElementById(
-        "historyMobileButton"
-      )
-      .addEventListener(
-        "click",
-        function() {
-
-          if (!isVersionHistoryOpened) {
-            return;
-          }
-
-
-          document
-            .querySelectorAll(
-              "#versionHistoryViewSwitcher button"
-            )
-            .forEach(
-              btn =>
-                btn.classList.remove(
-                  "active"
-                )
-            );
-
-
-          this.classList.add(
-            "active"
-          );
-
-
-          const api =
-            getStripoApi();
-
-          if (!api) {
-            return;
-          }
-
-
-          api.versionHistoryApi
-            .switchToMobilePreview();
-
-        }
-      );
-
-
-    document
-      .getElementById(
-        "historyDesktopButton"
-      )
-      .addEventListener(
-        "click",
-        function() {
-
-          if (!isVersionHistoryOpened) {
-            return;
-          }
-
-
-          document
-            .querySelectorAll(
-              "#versionHistoryViewSwitcher button"
-            )
-            .forEach(
-              btn =>
-                btn.classList.remove(
-                  "active"
-                )
-            );
-
-
-          this.classList.add(
-            "active"
-          );
-
-
-          const api =
-            getStripoApi();
-
-          if (!api) {
-            return;
-          }
-
-
-          api.versionHistoryApi
-            .switchToDesktopPreview();
-
-        }
-      );
-
-  </script>
-
-
-  <!-- Stripo initialization -->
-
-  <script>
-
-    async function initStripo(template) {
-
-      const script =
-        document.createElement("script");
-
-
-      script.id =
-        "UiEditorScript";
-
-
-      script.type =
-        "module";
-
-
-      script.src =
-        "https://plugins.stripo.email/resources/uieditor/latest/UIEditor.js";
-
-
-      script.onload =
-        async function() {
-
-          try {
-
-            /*
-             * Authentication token-ը ստանում ենք
-             * հենց HTML-ից Stripo auth API-ի միջոցով։
-             */
-
-            const token =
-              await getStripoToken();
-
-
-            window.UIEditor.initEditor(
-
-              document.querySelector(
-                "#stripoEditorContainer"
-              ),
-
-              {
-
-                ampPage: true,
-
-                ignoreAmp: false,
-
-
-                brandColorPalette: [
-
-                  {
-                    name: "Name1",
-                    value: "#35882C"
-                  },
-
-                  {
-                    value: "white"
-                  },
-
-                  {
-                    name: "Name2",
-                    value: "Green"
-                  }
-
-                ],
-
-
-                html:
-                  template.html,
-
-
-                css:
-                  template.css,
-
-
-                metadata: {
-
-                  emailId:
-                    "plugin_demo_1",
-
-                  userId:
-                    "1",
-
-                  username:
-                    "Plugin Demo User",
-
-                  avatarUrl:
-                    "https://plugin.stripocdn.email/content/guids/CABINET_eab4e7d5a4603ac03f4120652a3a5a540f0c79c688514939f095f67433ed4a67/images/photo256.png"
-
-                },
-
-
-                locale: "en",
-
-
-                commentingEnabled: {
-
-                  enabled: true
-
-                },
-
-
-                /*
-                 * Stripo-ն կարող է նոր token պահանջել։
-                 */
-
-                onTokenRefreshRequest:
-                  function(callback) {
-
-                    getStripoToken()
-                      .then(
-                        function(newToken) {
-
-                          callback(
-                            newToken
-                          );
-
-                        }
-                      )
-                      .catch(
-                        function(error) {
-
-                          console.error(
-                            error
-                          );
-
-                          notifications.error(
-                            "Stripo authentication failed."
-                          );
-
-                        }
-                      );
-
-                  },
-
-
-                onUserListChange:
-                  function(usersList) {
-
-                    const avatars =
-                      document.getElementById(
-                        "avatars"
-                      );
-
-
-                    avatars.innerHTML = "";
-
-
-                    usersList.forEach(
-                      function(user) {
-
-                        const avatar =
-                          document.createElement(
-                            "div"
-                          );
-
-
-                        avatar.className =
-                          "avatar-preview";
-
-
-                        avatar.style.backgroundImage =
-                          "url('" +
-                          user.avatar +
-                          "')";
-
-
-                        avatars.appendChild(
-                          avatar
-                        );
-
-                      }
-                    );
-
-                  },
-
-
-                codeEditorButtonSelector:
-                  "#codeEditor",
-
-
-                undoButtonSelector:
-                  "#undoButton",
-
-
-                redoButtonSelector:
-                  "#redoButton",
-
-
-                mobileViewButtonSelector:
-                  "#mobileViewButton",
-
-
-                desktopViewButtonSelector:
-                  "#desktopViewButton",
-
-
-                keepModuleStylesEnabled:
-                  true,
-
-
-                notifications: {
-
-                  info:
-                    notifications.info.bind(
-                      notifications
-                    ),
-
-                  error:
-                    notifications.error.bind(
-                      notifications
-                    ),
-
-                  warn:
-                    notifications.warn.bind(
-                      notifications
-                    ),
-
-                  loader:
-                    function() {},
-
-                  hide:
-                    notifications.hide.bind(
-                      notifications
-                    ),
-
-                  success:
-                    notifications.success.bind(
-                      notifications
-                    )
-
-                }
-
-              }
-
-            );
-
-          }
-
-          catch(error) {
-
-            console.error(
-              "Stripo initialization error:",
-              error
-            );
-
-
-            notifications.error(
-              "Stripo authentication failed."
-            );
-
-          }
-
-        };
-
-
-      script.onerror =
-        function() {
-
-          notifications.error(
-            "Stripo editor script could not be loaded."
-          );
-
-        };
-
-
-      document.body.appendChild(
-        script
-      );
-
-    }
-
-
-    loadDemoTemplate(
-      initStripo
-    );
-
-  </script>
+</script>
 
 </body>
-
 </html>
