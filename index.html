@@ -11,9 +11,11 @@
         name2: "PasswordBypassSegment",
         testMarker: "test-002"
       });
+      analytics.track("Button Clicked", {});
       }}();
     </script>
   </head>
   <body>
+    <button type="button" style="width: 250px; height: 80px; font-size: 24px;" onclick="analytics.track('Button Clicked');">Click Me</button>
   </body>
 </html>
